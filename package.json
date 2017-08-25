@@ -1,0 +1,26 @@
+{
+  "author": "",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.4.3",
+    "mongoose": "^4.11.8"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-mocha": "^3.0.1",
+    "mocha": "^3.2.0"
+  },
+  "description": "jetly-app",
+  "license": "ISC",
+  "main": "server/index.js",
+  "name": "jetly-app",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test"
+  },
+  "version": "1.0.1"
+}

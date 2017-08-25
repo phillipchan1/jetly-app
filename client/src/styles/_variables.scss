@@ -1,0 +1,56 @@
+/* ---------- Typography ---------- */
+
+$bodyFontSize: 15px;
+
+/* ---------- Spacing ---------- */
+
+$largeSpacing: 3em;
+$smallSpacing: .5em;
+$standardSpacing: 1em;
+
+/* ---------- Animation ---------- */
+
+$transitionFast: all 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+$transitionNormal: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+$transitionSlow: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+
+/* ---------- Colors ---------- */
+
+// whites
+$white: rgba(255, 255, 255, 1);
+$whiteOff: #EFEFEF;
+$whiteSuperFaded: rgba(255, 255, 255, 0.1);
+$whiteFaded: rgba(255, 255, 255, 0.5);
+$whiteFadedHover: rgba(255, 255, 255, 0.8);
+
+// grays
+$gray: rgba(91, 91, 91, 1);
+$grayFaded: rgba(91, 91, 91, 0.5);
+$graySuperFaded: rgba(91, 91, 91, 0.2);
+$grayBlueLight: #ECF2F6;
+$grayBlueDark: #697D8A;
+
+// blues
+$primaryBlue: #6E62B5;
+$activeBlue: #15A4FA;
+
+// green
+$activeGreen: #8BC824;
+
+/* ---------- Responsive ---------- */
+
+$break-small: 500px;
+$break-tablet: 960px;
+$break-large: 1024px;
+
+@mixin respond-to($media) {
+  @if $media == phone {
+    @media only screen and (max-width: $break-small) { @content; }
+  }
+  @else if $media == tablet {
+    @media only screen and (max-width: $break-tablet) { @content; }
+  }
+  @else if $media == wide-screens {
+    @media only screen and (min-width: $break-large) { @content; }
+  }
+}
