@@ -5,7 +5,9 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.4.3",
-    "mongoose": "^4.11.8"
+    "mongoose": "^4.11.8",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -20,7 +22,8 @@
   "name": "jetly-app",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test"
+    "test": "node test",
+    "dev": "concurrently \"cd client && ng serve --proxy-config proxy.conf.json\" \"nodemon\""
   },
   "version": "1.0.1"
 }
