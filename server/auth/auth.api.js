@@ -7,7 +7,6 @@ var passport = require('passport');
 var config = require('../config');
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
 
 passport.use(new GoogleStrategy({
         clientID: '1027177071681-sfncplgtv4d9v26lvbo82mtg4378onsr.apps.googleusercontent.com',
@@ -34,33 +33,6 @@ passport.use(new GoogleStrategy({
         });
     }
 ));
-
-passport.use(new FacebookStrategy({
-        clientID: '1413455518704240',
-        clientSecret: '835cbefc5c78cce612e50ed2862e07f7',
-        callbackURL: "http://localhost:3000/api/auth/facebook/callback"
-    },
-    function(accessToken, refreshToken, profile, cb) {
-        User.create({
-            facebookId: profile.id,
-            reports: {
-                createdOn: Date.now()
-            }
-        }, function(err, user) {
-            return cb(err, user);
-        });
-    }
-));
-
-router.get('/facebook',
-    passport.authenticate('facebook'));
-
-router.get('/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    function(req, res) {
-        // Successful authentication, redirect home.
-        res.redirect('http://localhost:4200');
-    });
 
 router.get('/google',
     passport.authenticate('google', { scope: ['profile'] }));
