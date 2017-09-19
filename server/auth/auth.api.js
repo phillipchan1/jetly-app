@@ -13,22 +13,29 @@ passport.use(new GoogleStrategy({
         clientSecret: 'tJi-WQg1KSx7_Qb1OlzYDpLJ',
         callbackURL: "http://localhost:3000/api/auth/google/callback"
     },
-    function(accessToken, refreshToken, profile, cb) {
+    function(accessToken, refreshToken, profile, next) {
         User.findOne({
             provider: 'google',
             profileId: profile.id
         }, function(err, user) {
 
             // if user doesn't exist create a new one
-            if (err) {
+            if (!user) {
+                var err = new Error("User already exists");
+
                 User.create({
                     provider: 'google',
                     profileId: profile.id,
+                    firstName: profile.name.givenName,
+                    lastName: profile.name.familyName,
                 }, function(err, user) {
-                    return cb(err, user);
+                    return next(err, user);
                 });
-            } else {
-                cb(null, user);
+            }
+
+            // else return the user
+            else {
+                next(null, user);
             }
         });
     }
@@ -37,9 +44,15 @@ passport.use(new GoogleStrategy({
 router.get('/google',
     passport.authenticate('google', { scope: ['profile'] }));
 
-router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    function(req, res) {
+router.get(
+    '/google/callback',
+    passport.authenticate(
+        'google',
+        {
+            failWithError: true
+        }
+    ),
+    function(req, res, next) {
         var user = req.user;
 
         User.findOne({
@@ -65,101 +78,6 @@ router.get('/google/callback',
         });
     }
 );
-
-// registering new user
-router.post('/register', function(req, res, next) {
-    var passwordResult = userUtils.checkPassword(req.body.password);
-
-    // Check appropriateness of password
-    if (passwordResult.success === false) {
-        res.json({
-            success: false,
-            message: passwordResult.message
-        });
-    } else {
-        userUtils.findUserByEmail(req.body.email)
-
-            // if user already exists, don't create a new account
-            .then(function(user) {
-                res.json({
-                    success: false,
-                    message: 'User already exists'
-                });
-            }, function(err) {
-                return userUtils.createNewUser(req.body.email, req.body.password);
-            })
-
-            // if user is created successfully
-            .then(function(user) {
-                res.json({
-                    success: true,
-                    message: 'User succesfully created'
-                });
-            }, function(err) {
-                res.json({
-                    success: false,
-                    message: 'Unable to create user'
-                });
-            });
-    }
-});
-
-// logging in
-router.post('/login', function(req, res, next) {
-    userUtils.findUserByEmail(req.body.email)
-
-        //authenticate user
-        .then(function(user) {
-            if (user) {
-                return userUtils.authenticate(req.body.email, req.body.password);
-            }
-        }, function(err) {
-            res.json({
-                success: false,
-                message: 'Incorrect Email/Password'
-            });
-
-            return Promise.reject(err);
-        })
-
-        // report login
-        .then(function(user) {
-            return userUtils.saveUserData({
-                user: user,
-                category: 'reports',
-                data: {
-                    lastLoggedIn: Date.now()
-                }
-            });
-        }, function(err) {
-            res.json({
-                success: false,
-                message: 'Incorrect Email/Password'
-            });
-        })
-
-        // if successful, sign them in
-        .then(function(user) {
-            var token = jwt.sign(
-                user,
-                config.secret, {
-                    expiresIn: "7d"
-                }
-            );
-
-            user.save(function(err, user) {
-                if (!err) {
-                    res.json({
-                        success: true,
-                        token: token,
-                        user: user
-                    });
-                }
-            });
-
-            return user;
-        });
-});
 
 // verify a json web token
 router.get('/verify', function(req, res, next) {
