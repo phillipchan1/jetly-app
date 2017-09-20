@@ -24,7 +24,7 @@
   "scripts": {
     "start": "node server/index.js",
     "test": "node test",
-    "dev": "concurrently \"cd client && ng serve --proxy-config proxy.conf.json\" \"nodemon\""
+    "dev": "concurrently \"cd client && ng build --watch --proxy-config proxy.conf.json\" \"nodemon\""
   },
   "version": "1.0.1"
 }

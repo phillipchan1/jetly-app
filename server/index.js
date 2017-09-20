@@ -25,26 +25,13 @@ app.use(parser.urlencoded({ extended: false }));
 // connect to database
 require('./database/database.js');
 
-// app.use('/', express.static('client/dist'));
-
 // set up routes
 var routes = require('./app.routes.js');
 
 app.use('/api', routes);
 
-
-// direct all other routes to client-side app
-// app.all('/*', function ( req, res ) {
-//     res
-//         .status( 200 )
-//         .set( { 'content-type': 'text/html; charset=utf-8' } )
-//         .sendFile(process.cwd() + '/client/dist/index.html');
-// });
-
-// // direct all other routes to client-side app
-// app.get('/*', (req, res) => {
-//     res.sendFile('/client/dist/index.html');
-// });
+// serve client files
+app.use(express.static('./client/dist'));
 
 app.listen(process.env.PORT || 3000, function() {
 	console.log('Service on running on 3000');
