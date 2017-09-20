@@ -34,5 +34,5 @@ app.use('/api', routes);
 app.use(express.static('./client/dist'));
 
 app.listen(process.env.PORT || 3000, function() {
-	console.log('Service on running on 3000');
+	console.log('Service running on 3000');
 });
