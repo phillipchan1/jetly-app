@@ -5,117 +5,132 @@ var userUtils = require('./userUtils.js');
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var config = require('../config');
+var url = require('url');
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 passport.use(new GoogleStrategy({
-        clientID: '1027177071681-sfncplgtv4d9v26lvbo82mtg4378onsr.apps.googleusercontent.com',
-        clientSecret: 'tJi-WQg1KSx7_Qb1OlzYDpLJ',
-        callbackURL: "http://localhost:3000/api/auth/google/callback"
-    },
-    function(accessToken, refreshToken, profile, next) {
-        User.findOne({
-            provider: 'google',
-            profileId: profile.id
-        }, function(err, user) {
+		clientID: '1027177071681-sfncplgtv4d9v26lvbo82mtg4378onsr.apps.googleusercontent.com',
+		clientSecret: 'tJi-WQg1KSx7_Qb1OlzYDpLJ',
+		callbackURL: "http://localhost:3000/api/auth/google/callback"
+	},
+	function(accessToken, refreshToken, profile, next) {
+		User.findOne({
+			provider: 'google',
+			profileId: profile.id
+		}, function(err, user) {
 
-            // if user doesn't exist create a new one
-            if (!user) {
-                var err = new Error("User already exists");
+			// if user doesn't exist create a new one
+			if (!user) {
+				var err = new Error("User already exists");
 
-                User.create({
-                    provider: 'google',
-                    profileId: profile.id,
-                    firstName: profile.name.givenName,
-                    lastName: profile.name.familyName,
-                }, function(err, user) {
-                    return next(err, user);
-                });
-            }
+				User.create({
+					provider: 'google',
+					profileId: profile.id,
+					firstName: profile.name.givenName,
+					lastName: profile.name.familyName,
+				}, function(err, user) {
+					return next(err, user);
+				});
+			}
 
-            // else return the user
-            else {
-                next(null, user);
-            }
-        });
-    }
+			// else return the user
+			else {
+				next(null, user);
+			}
+		});
+	}
 ));
 
 router.get('/google',
-    passport.authenticate('google', { scope: ['profile'] }));
+	passport.authenticate('google', { scope: ['profile'] }));
 
 router.get(
-    '/google/callback',
-    passport.authenticate(
-        'google',
-        {
-            failWithError: true
-        }
-    ),
-    function(req, res, next) {
-        var user = req.user;
+	'/google/callback',
+	passport.authenticate(
+		'google',
+		{
+			failWithError: true
+		}
+	),
+	function(req, res, next) {
+		var user = req.user;
 
-        User.findOne({
-            provider: 'google',
-            profileId: user.profileId
-        }, function(err, user) {
-            var token = jwt.sign(
-                user,
-                config.secret, {
-                    expiresIn: "7d"
-                }
-            );
+		User.findOne({
+			provider: 'google',
+			profileId: user.profileId
+		}, function(err, user) {
+			var token = jwt.sign(
+				user,
+				config.secret, {
+					expiresIn: "7d"
+				}
+			);
 
-            user.save(function(err, user) {
-                if (!err) {
-                    res.json({
-                        success: true,
-                        token: token,
-                        user: user
-                    });
-                }
-            });
-        });
-    }
+			user.save(function(err, user) {
+				// success!
+				if (!err) {
+					res.redirect(
+						url.format(
+							{
+								pathname: '/',
+								query: {
+									token: token
+								}
+							}
+						)
+					);
+				}
+
+				// fail
+				else {
+					res.redirect('/');
+				}
+
+
+			});
+		});
+	}
 );
 
 // verify a json web token
 router.get('/verify', function(req, res, next) {
-    var token = req.headers.token;
+	var token = req.headers.token;
 
-    if (token) {
-        jwt.verify(token, config.secret, function(err, decoded) {
-            if (err) {
-                res.json({
-                    success: false,
-                    message: 'Authentication Error: Invalid/No JWtoken Provided',
-                });
-            } else {
+	if (token) {
+		jwt.verify(token, config.secret, function(err, decoded) {
+			if (err) {
+				res.json({
+					success: false,
+					message: 'Authentication Error: Invalid/No JWtoken Provided',
+				});
+			} else {
 
-                // make sure user still exists
-                User.findOne({ email: decoded._doc.email }, function(err, user) {
-                    if (!user) {
-                        res.json({
-                            success: false,
-                            message: 'User not found'
-                        });
-                    } else {
-                        // User exists, JWtoken valid: Success
-                        res.json({
-                            success: true,
-                            message: 'Success! JWtoken Valid',
-                            user: user
-                        });
-                    }
-                });
-            }
-        });
-    } else {
-        res.json({
-            success: false,
-            message: 'Authentication Error: Invalid/No JWtoken Provided'
-        });
-    }
+				// make sure user still exists
+				User.findOne({ email: decoded._doc.email }, function(err, user) {
+					if (!user) {
+						res.json({
+							success: false,
+							message: 'User not found'
+						});
+					} else {
+
+						// User exists, JWtoken valid: Success
+						res.json({
+							success: true,
+							message: 'Success! JWtoken Valid',
+							user: user
+						});
+					}
+				});
+			}
+		});
+	} else {
+		res.json({
+			success: false,
+			message: 'Authentication Error: Invalid/No JWtoken Provided'
+		});
+	}
 });
 
 module.exports = router;
