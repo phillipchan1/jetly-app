@@ -1,15 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute, Params} from '@angular/router';
 
 @Component({
-  selector: 'app-auth',
-  templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.css']
+	selector: 'app-auth',
+	templateUrl: './auth.component.html',
+	styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit {
 
-  constructor() { }
+	constructor(
+		private route: ActivatedRoute,
+		private router: Router
+		) {
+		var token = this.route.snapshot.queryParams["token"];
 
-  ngOnInit() {
-  }
+		// if there's a token, this user is logged in
+		if (token) {
+			console.log(token);
+		}
+
+
+	}
+
+	ngOnInit() {
+	}
 
 }

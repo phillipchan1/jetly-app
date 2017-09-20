@@ -73,7 +73,7 @@ router.get(
 					res.redirect(
 						url.format(
 							{
-								pathname: '/',
+								pathname: '/login',
 								query: {
 									token: token
 								}
@@ -84,7 +84,7 @@ router.get(
 
 				// fail
 				else {
-					res.redirect('/');
+					res.redirect('/login');
 				}
 
 
