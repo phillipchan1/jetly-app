@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params} from '@angular/router';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
 	selector: 'app-auth',
@@ -10,7 +11,8 @@ export class AuthComponent implements OnInit {
 
 	constructor(
 		private route: ActivatedRoute,
-		private router: Router
+		private router: Router,
+		public authService:AuthService
 		) {
 		var token = this.route.snapshot.queryParams["token"];
 
@@ -18,7 +20,6 @@ export class AuthComponent implements OnInit {
 		if (token) {
 			console.log(token);
 		}
-
 
 	}
 
