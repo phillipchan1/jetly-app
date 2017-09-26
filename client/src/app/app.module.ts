@@ -18,6 +18,10 @@ const appRoutes: Routes = [
   {
     path: 'login',
     component: AuthComponent
+  },
+  {
+    path: 'board',
+    component: BoardComponent
   }
 ]
 

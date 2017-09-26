@@ -18,9 +18,13 @@ export class AuthComponent implements OnInit {
 
 		// if there's a token, this user is logged in
 		if (token) {
-			console.log(token);
+			this.authService.login(
+				token,
+				function() {
+					router.navigate(['/board'])
+				}
+			);
 		}
-
 	}
 
 	ngOnInit() {
