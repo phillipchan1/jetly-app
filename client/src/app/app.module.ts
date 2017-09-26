@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router'
 import { AuthService } from './services/auth/auth.service';
+import { UrlService } from './services/utils/url.service';
 
 import { AppComponent } from './app.component';
 import { BoardComponent } from './components/board/board.component';
@@ -38,7 +39,8 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   providers: [
-    AuthService
+    AuthService,
+    UrlService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,2 +1,9 @@
-<app-nav></app-nav>
-<router-outlet></router-outlet>
+<div *ngIf="authService.isLoggedIn(); else login">
+	{{authService.loggedIn}}
+	<app-nav></app-nav>
+	<router-outlet></router-outlet>
+</div>
+
+<ng-template #login>
+	<app-auth></app-auth>
+</ng-template>

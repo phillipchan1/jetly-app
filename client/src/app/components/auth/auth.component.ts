@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params} from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
+import { UrlService } from '../../services/utils/url.service';
 
 @Component({
 	selector: 'app-auth',
@@ -10,13 +11,14 @@ import { AuthService } from '../../services/auth/auth.service';
 export class AuthComponent implements OnInit {
 
 	constructor(
-		private route: ActivatedRoute,
-		private router: Router,
+		private route:ActivatedRoute,
+		private router:Router,
+		public urlService:UrlService,
 		public authService:AuthService
 		) {
-		var token = this.route.snapshot.queryParams["token"];
 
-		// if there's a token, this user is logged in
+		let token = this.urlService.getQueryParameterByName('token', null);
+
 		if (token) {
 			this.authService.login(
 				token,
@@ -25,9 +27,11 @@ export class AuthComponent implements OnInit {
 				}
 			);
 		}
+
+		if (authService.isLoggedIn()) {
+			this.router.navigate(['/board']);
+		}
 	}
 
-	ngOnInit() {
-	}
-
+	ngOnInit() {}
 }

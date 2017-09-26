@@ -3,6 +3,15 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class AuthService {
 
+	isLoggedIn() {
+		if (this.getJWToken()) {
+			this.loggedIn = true;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	getJWToken() {
 		return localStorage.getItem('jwtoken');
 	}
@@ -11,7 +20,9 @@ export class AuthService {
 		this.storeJWToken(token);
 		this.loggedIn = true;
 
-		callback();
+		if (callback) {
+			callback();
+		}
 	}
 
 	logout() {
@@ -19,7 +30,7 @@ export class AuthService {
 		this.loggedIn = false;
 	}
 
-	loggedIn:boolean = false;
+	private loggedIn:boolean = false;
 
 	private removeJWToken() {
 		localStorage.removeItem('jwtoken');
