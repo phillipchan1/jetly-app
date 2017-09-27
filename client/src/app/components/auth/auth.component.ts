@@ -28,7 +28,7 @@ export class AuthComponent implements OnInit {
 			);
 		}
 
-		if (authService.isLoggedIn()) {
+		if (authService.loggedIn) {
 			this.router.navigate(['/board']);
 		}
 	}

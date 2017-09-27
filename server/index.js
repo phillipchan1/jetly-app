@@ -22,6 +22,9 @@ passport.deserializeUser(function(user, done) {
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: false }));
 
+// serve client files
+app.use(express.static('./client/dist'));
+
 // connect to database
 require('./database/database.js');
 
@@ -30,8 +33,7 @@ var routes = require('./app.routes.js');
 
 app.use('/api', routes);
 
-// serve client files
-app.use(express.static('./client/dist'));
+
 
 app.all('/*', function ( req, res ) {
 	res

@@ -1,4 +1,4 @@
-<div *ngIf="authService.isLoggedIn(); else login">
+<div *ngIf="authService.loggedIn; else login">
 	{{authService.loggedIn}}
 	<app-nav></app-nav>
 	<router-outlet></router-outlet>

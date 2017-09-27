@@ -11,20 +11,48 @@ import { Router, ActivatedRoute, Params} from '@angular/router';
 export class AppComponent {
 	title = 'app';
 
+	setLoginStatus() {
+		var currentToken = this.authService.getJWToken();
+
+		// if accepting token don't do anything
+		if (!this.urlService.getQueryParameterByName('token', null)) {
+
+			if (currentToken) {
+				this.authService
+					.verifyLoggedStatus()
+					.subscribe(
+						data => {
+
+							// token is good => log user in
+							if (data.success) {
+								this.authService.login(currentToken, null);
+							}
+
+							// token is bad/expired
+							else {
+								this.router.navigate(['/login']);
+								this.authService.logout();
+							}
+						}
+					)
+				}
+
+				// no token, redirect to login page
+				else {
+					this.router.navigate(['/login']);
+				}
+		}
+	}
+
 	constructor(
 		public authService:AuthService,
 		public urlService:UrlService,
 		private route:ActivatedRoute,
 		private router:Router
 		) {
-			// if accepting token don't do anything
-			if (!this.urlService.getQueryParameterByName('token', null)) {
 
-				// if user is not logged in, always redirect to login page
-				if (!authService.isLoggedIn()) {
-			 		this.router.navigate(['/login']);
-			 	}
-			}
+			// on application load:
+			this.setLoginStatus();
 
 		}
 	}

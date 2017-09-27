@@ -1,6 +1,8 @@
 // application-wide modules
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpModule} from '@angular/http';
+
 import { RouterModule, Routes } from '@angular/router'
 import { AuthService } from './services/auth/auth.service';
 import { UrlService } from './services/utils/url.service';
@@ -36,6 +38,7 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [

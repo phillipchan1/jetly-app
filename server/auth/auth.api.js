@@ -95,7 +95,10 @@ router.get(
 
 // verify a json web token
 router.get('/verify', function(req, res, next) {
-	var token = req.headers.token;
+	console.log(req.headers);
+	var token = req.headers.authorization;
+	console.log('token:');
+	console.log(token);
 
 	if (token) {
 		jwt.verify(token, config.secret, function(err, decoded) {
@@ -131,6 +134,45 @@ router.get('/verify', function(req, res, next) {
 			message: 'Authentication Error: Invalid/No JWtoken Provided'
 		});
 	}
+});
+
+// protected routes middleware
+// everything below is protected
+router.use(function(req, res, next) {
+    var token = req.headers.Authorization || req.query.token || req.headers['x-access-token'] || req.headers.token;
+
+    if (token) {
+        jwt.verify(token, config.secret, function(err, decoded) {
+            if (err) {
+                res.json({
+                    success: false,
+                    message: 'Error: JWtoken invalid for route'
+                });
+            }
+            // success:
+            else {
+                let decoded = jwt.decode(token);
+
+                // find the user and pass the entire user for the rest of the routes
+                User.findOne({email: decoded._doc.email}, function(err, user) {
+                    if (!user) {
+                        res.json({
+                            success: false,
+                            message: 'User not found'
+                        });
+                    } else {
+                        req.user = user;
+                        next();
+                    }
+                });
+            }
+        });
+    } else {
+        res.status(403).json({
+            succes: false,
+            message: 'Authorization Fail: No Token Provided'
+        });
+    }
 });
 
 module.exports = router;

@@ -1,22 +1,29 @@
 import { Injectable } from '@angular/core';
+import { Http, Headers} from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class AuthService {
 
-	isLoggedIn() {
-		if (this.getJWToken()) {
-			this.loggedIn = true;
-			return true;
-		} else {
-			return false;
-		}
+	verifyLoggedStatus() {
+		let headers = new Headers();
+		this.createAuthorizationHeader(headers);
+
+		return this.http.get(
+				'api/auth/verify/', {
+					headers: headers
+				})
+			.map(res => res.json());
 	}
 
-	getJWToken() {
+	getJWToken():string {
 		return localStorage.getItem('jwtoken');
 	}
 
-	login(token, callback) {
+	loggedIn:boolean = false;
+
+	login(token, callback):void {
 		this.storeJWToken(token);
 		this.loggedIn = true;
 
@@ -30,17 +37,19 @@ export class AuthService {
 		this.loggedIn = false;
 	}
 
-	private loggedIn:boolean = false;
+	private createAuthorizationHeader(headers: Headers) {
+		headers.set('Authorization', this.getJWToken());
+	}
 
-	private removeJWToken() {
+	private removeJWToken():void {
 		localStorage.removeItem('jwtoken');
 	}
 
-	private storeJWToken(token) {
+	private storeJWToken(token):void {
 		if (token) {
 			localStorage.setItem('jwtoken', token);
 		}
 	}
 
-	constructor() {}
+	constructor(public http:Http) {}
 }
